@@ -1,0 +1,2 @@
+# Screenshots to capture (save into docs/screenshots/)
+1. `dashboard-tab.png` Dashboard tab (KPIs, 6 charts, latest analyses) 2. `analyze-high-risk.png` Analyze tab, phishing sample result with the Why list 3. `analyze-safe.png` Analyze tab, legitimate sample 4. `history-tab.png` History tab with a filter applied 5. `history-detail.png` detail dialog 6. `awareness-tab.png` checklist, tips, quiz and playbook 7. `confusion-matrices.png` from results/ 8. `tests-passing.png` terminal output of pytest.

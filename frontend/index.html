@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phishing Email Detection & Awareness Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#EBEFF5;--ink:#16202E;--mut:#5A6678;--line:#D8DFEA;--navy:#1B3555;--hi:#D6344A;--su:#E8912D;--lo:#3B82C4;--sa:#2E9E78}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+header{background:var(--navy);color:#fff;padding:12px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}header span{font-size:12px;opacity:.8}
+.chip{background:#ffffff22;padding:3px 10px;border-radius:99px;font-size:12px}
+main{padding:14px 22px;display:grid;grid-template-columns:minmax(380px,5fr) 7fr;gap:14px;align-items:start}
+.col{display:grid;gap:14px;min-width:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+h2{font-size:14px;margin:0 0 10px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi{border-left:4px solid var(--c);padding:10px 12px}.kpi b{font-size:26px;display:block;line-height:1.1}.kpi small{color:var(--mut)}
+.charts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.charts .card{padding:10px}.cv{height:190px;position:relative}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,textarea,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;background:var(--navy);color:#fff}
+button.alt{background:#E4EAF3;color:var(--navy)}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--lo);outline-offset:1px}
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.btns .go{flex:1}
+.gauge{width:200px;display:block;margin:0 auto}
+.badge{display:inline-block;color:#fff;padding:3px 12px;border-radius:99px;font-weight:600;background:var(--c)}
+ul{margin:6px 0;padding-left:0;list-style:none}li{padding:4px 0;border-bottom:1px dashed var(--line)}li:last-child{border:0}
+.pts{float:right;color:var(--mut);font-size:12px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{background:#F5F7FB;border-radius:8px;padding:10px}.box h3{font-size:13px;margin:0 0 4px}
+code{font-size:12px;background:#fff;padding:1px 4px;border-radius:4px;word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}th{color:var(--mut);font-weight:600;position:sticky;top:0;background:#fff}
+.scroll{max-height:290px;overflow:auto}tr.r{cursor:pointer}tr.r:hover{background:#F2F5FA}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:6px}
+.tools{display:grid;grid-template-columns:1fr 150px 150px;gap:8px;margin-bottom:8px}
+.aw{display:grid;grid-template-columns:1fr 2fr;gap:14px;padding:0 22px 22px}
+.tips{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.tip{background:#F5F7FB;border-radius:8px;padding:9px;font-size:12.5px}.tip b{display:block;font-size:13px;margin-bottom:2px}
+.prog{height:6px;background:#E4EAF3;border-radius:9px;margin:6px 0 8px}.prog i{display:block;height:100%;background:var(--sa);border-radius:9px;width:0;transition:width .25s}
+dialog{border:1px solid var(--line);border-radius:10px;max-width:560px;width:92%}
+@media(max-width:1050px){main{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.charts,.tips{grid-template-columns:1fr 1fr}.aw{grid-template-columns:1fr}.tools{grid-template-columns:1fr}}
+@media(max-width:560px){.charts,.tips,.split,.row2{grid-template-columns:1fr}}
+.tabs{background:#fff;border-bottom:1px solid var(--line);padding:0 22px;display:flex;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:5}
+.tabs button{background:none;color:var(--mut);border-radius:0;padding:12px 16px;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected=true]{color:var(--navy);border-color:var(--navy);font-weight:600}
+.tab[hidden]{display:none}main.one{grid-template-columns:1fr}#t-hist .scroll{max-height:70vh}.tab .aw{padding:0}.cv{height:230px}
+@media(max-width:1050px){.tab .aw{grid-template-columns:1fr!important}}
+</style></head><body>
+<header><div><h1>Phishing Email Detection & Awareness Dashboard</h1><span>Static, explainable analysis. Links are never opened and attachments are never run.</span></div><div><span class="chip">Synthetic data only</span></div></header>
+<nav class="tabs" role="tablist" aria-label="Sections"><button data-go="dash" role="tab">Dashboard</button><button data-go="an" role="tab">Analyze email</button><button data-go="hist" role="tab">History</button><button data-go="aw" role="tab">Awareness</button></nav>
+<main class="one tab" id="t-dash">
+ <div class="kpis" id="kpis"></div>
+ <div class="charts">
+  <div class="card"><h2>Classification mix</h2><div class="cv"><canvas id="c1"></canvas></div></div>
+  <div class="card"><h2>Phishing vs legitimate (by verdict)</h2><div class="cv"><canvas id="c2"></canvas></div></div>
+  <div class="card"><h2>Top detected indicators</h2><div class="cv"><canvas id="c3"></canvas></div></div>
+  <div class="card"><h2>Risk score distribution</h2><div class="cv"><canvas id="c4"></canvas></div></div>
+  <div class="card"><h2>Detection trend, 14 days</h2><div class="cv"><canvas id="c5"></canvas></div></div>
+  <div class="card"><h2>Common suspicious keywords</h2><div class="cv"><canvas id="c6"></canvas></div></div>
+ </div>
+<div class="aw" style="grid-template-columns:2fr 1fr;padding:0"><section class="card"><h2>Latest analyses <button class="alt" style="float:right;padding:3px 10px" data-go="hist">View all</button></h2><table><thead><tr><th>Class</th><th>Score</th><th>Subject</th><th>Domain</th><th>When</th></tr></thead><tbody id="latest"></tbody></table></section>
+<section class="card"><h2>How a score becomes a class</h2><ul><li><span class="dot" style="--c:#2E9E78"></span><b>SAFE</b> 0-10<br><small>No meaningful indicators.</small></li><li><span class="dot" style="--c:#3B82C4"></span><b>LOW RISK</b> 11-30<br><small>Minor signals; confirm it was expected.</small></li><li><span class="dot" style="--c:#E8912D"></span><b>SUSPICIOUS</b> 31-60<br><small>Several signals; verify before acting.</small></li><li><span class="dot" style="--c:#D6344A"></span><b>HIGH RISK</b> 61-100<br><small>Likely phishing; do not click, report it.</small></li></ul><small style="color:var(--mut)">Thresholds are project assumptions to be calibrated on validation data.</small></section></div>
+</main>
+<main class="tab" id="t-an" hidden>
+<div class="col">
+ <section class="card"><h2>Email analyzer</h2>
+  <div class="row2"><div><label for="sender">Sender address</label><input id="sender" maxlength="254"></div><div><label for="dn">Display name (optional)</label><input id="dn" maxlength="100"></div></div>
+  <label for="subject">Subject</label><input id="subject" maxlength="300">
+  <label for="body">Body</label><textarea id="body" rows="5" maxlength="20000"></textarea>
+  <div class="row2"><div><label for="att">Attachment filename (optional)</label><input id="att" maxlength="255"></div><div><label for="file">Or load a .txt / .eml sample</label><input id="file" type="file" accept=".txt,.eml"></div></div>
+  <div class="btns"><button class="go" id="go">Analyze email</button><button class="alt" id="sp">Phishing sample</button><button class="alt" id="sl">Legitimate sample</button></div>
+ </section>
+</div>
+<div class="col">
+ <section class="card" id="res" aria-live="polite"></section>
+</div>
+</main>
+<main class="one tab" id="t-hist" hidden>
+ <section class="card"><h2>Analysis history</h2>
+  <div class="tools"><input id="q" placeholder="Search subject or domain" aria-label="Search"><select id="fc" aria-label="Filter"><option value="">All classes</option><option>HIGH RISK</option><option>SUSPICIOUS</option><option>LOW RISK</option><option>SAFE</option></select><select id="so" aria-label="Sort"><option value="newest">Newest</option><option value="score_desc">Highest risk</option><option value="score_asc">Lowest risk</option></select></div>
+  <div class="scroll"><table><thead><tr><th>Class</th><th>Score</th><th>Subject</th><th>Domain</th><th>When</th></tr></thead><tbody id="hist"></tbody></table></div>
+ </section>
+</main>
+<main class="one tab" id="t-aw" hidden>
+<div class="aw">
+ <section class="card"><h2>Before you click</h2><div class="prog"><i id="pb"></i></div><div id="chk"></div></section>
+ <section class="card"><h2>How to spot a phishing email</h2><div class="tips" id="tips"></div></section>
+</div>
+<section class="aw" style="grid-template-columns:2fr 1fr;padding-top:0"><div class="card"><h2>Phishing simulation: phish or legitimate? <small id="qs" style="color:var(--mut)"></small></h2><div id="qb"></div></div>
+<div class="card"><h2>If you clicked: incident playbook</h2><ol style="padding-left:18px;margin:0;font-size:13px"><li>Disconnect from the network if you opened a file.</li><li>Do not enter or re-use any credentials on the page.</li><li>Change the password of any account you may have exposed, and enable MFA.</li><li>Report the email and the time you clicked to your security team.</li><li>Run a malware scan with your official security tool.</li><li>Watch accounts for unusual sign-ins and write down what happened.</li></ol></div></section>
+</main>
+<dialog id="dlg"><div id="dbody"></div><div class="btns"><button class="alt" id="del">Delete record</button><button id="cl">Close</button></div></dialog>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const COL={"SAFE":"#2E9E78","LOW RISK":"#3B82C4","SUSPICIOUS":"#E8912D","HIGH RISK":"#D6344A"};
+const SAMPLES={p:{sender:"security-alert@account-check.invalid.test",dn:"Account Security",subject:"URGENT: Verify Your Account Immediately",body:"Dear customer, your account will be suspended within 24 hours. Verify your password now: http://198.51.100.10/verify-account",att:"invoice.pdf.exe"},
+ l:{sender:"training@example.org",dn:"Example Training",subject:"Cybersecurity Workshop Reminder",body:"Hi Asha, the workshop starts Friday at 3 PM in Hall B. Bring your laptop. See you there.",att:""}};
+const TIPS=[["Sender address","Read the full address, not just the display name."],["Domain spelling","Look for swapped letters like paypa1 or exampl3."],["Unexpected urgency","Pressure to act now is a classic lever."],["Suspicious links","Hover first. Check the real destination."],["Credential requests","Real teams rarely ask for passwords by email."],["Unexpected attachments","Double extensions like .pdf.exe are red flags."],["Generic greetings","Dear customer suggests a mass mailing."],["Unusual payments","New bank details or gift cards need a call-back."],["Threatening language","Account closure threats are meant to rush you."],["Context","Were you expecting this message at all?"]];
+const CHK=["I recognise the sender and the address matches","The domain is spelled correctly","The message is not pressuring me to act now","I hovered the link and the destination looks right","It is not asking for a password, OTP or card details","I expected this attachment and the file type is normal","I can verify the request through another channel","I will report it if I am unsure"];
+$("#tips").innerHTML=TIPS.map(t=>`<div class="tip"><b>${esc(t[0])}</b>${esc(t[1])}</div>`).join("");
+$("#chk").innerHTML=CHK.map((t,i)=>`<label style="display:flex;gap:8px;margin:5px 0;color:var(--ink);font-size:13px"><input type="checkbox" style="width:auto" data-c>${esc(t)}</label>`).join("");
+document.addEventListener("change",e=>{if(e.target.dataset.c!==undefined){const n=document.querySelectorAll("[data-c]:checked").length;$("#pb").style.width=n/CHK.length*100+"%"}});
+function load(s){$("#sender").value=s.sender;$("#dn").value=s.dn;$("#subject").value=s.subject;$("#body").value=s.body;$("#att").value=s.att}
+$("#sp").onclick=()=>load(SAMPLES.p);$("#sl").onclick=()=>load(SAMPLES.l);
+$("#file").onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>100000){alert("File too large (100 KB max).");return}
+ const t=await f.text(),h=n=>(t.match(new RegExp("^"+n+":\\s*(.*)$","mi"))||[])[1]||"";const m=t.match(/<([^>]+)>/);
+ $("#sender").value=(h("From").match(/[\w.+-]+@[\w.-]+/)||[""])[0];$("#subject").value=h("Subject");$("#body").value=t.split(/\r?\n\r?\n/).slice(1).join("\n\n")||t};
+async function api(u,o){const r=await fetch(u,o);if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||r.statusText)}return r.status==204?null:r.json()}
+function render(r){const c=COL[r.classification],L=251;
+ const why=r.indicators.length?r.indicators.map(i=>`<li>&#10003; <b>${esc(i.type)}</b><span class="pts">+${i.points}</span><br><small>${esc(i.description)}</small></li>`).join(""):"<li>No indicators detected.</li>";
+ const urls=r.urls.length?r.urls.map(u=>`<li><code>${esc(u.url)}</code> <span class="pts">${u.score}/100</span><br><small>${esc(u.findings.join("; "))}</small></li>`).join(""):"<li>No URLs in this email.</li>";
+ $("#res").innerHTML=`<h2>Result</h2><svg viewBox="0 0 200 112" class="gauge"><path d="M20 100A80 80 0 0 1 180 100" fill="none" stroke="#E5EAF1" stroke-width="16" stroke-linecap="round"/><path d="M20 100A80 80 0 0 1 180 100" fill="none" stroke="${c}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${L*(1-r.score/100)}"/><text x="100" y="92" text-anchor="middle" font-size="34" font-weight="700" fill="${c}">${r.score}</text><text x="100" y="109" text-anchor="middle" font-size="11" fill="#5A6678">phishing risk score / 100</text></svg>
+ <div style="text-align:center;margin:4px 0 8px"><span class="badge" style="--c:${c}">${esc(r.classification)}</span></div>
+ <h2>Why?</h2><ul>${why}</ul>
+ <div class="split"><div class="box"><h3>Sender analysis (${r.sender.score}/100)</h3><small>${esc(r.sender.findings.join("; "))}</small></div><div class="box"><h3>Attachment</h3><small>${esc(r.attachment.findings.join("; ")||"No attachment supplied")}</small></div></div>
+ <h2 style="margin-top:12px">URL analysis</h2><ul>${urls}</ul>
+ ${r.hybrid?`<div class="box" style="margin-top:10px"><h3>Hybrid view (rules + ML)</h3><small>Rule score ${r.score} &middot; ML phishing probability ${Math.round(r.ml_probability*100)}% &middot; weighted score <b>${r.hybrid.score}</b> (${esc(r.hybrid.classification)}). A probability is a second opinion, not certainty.</small></div>`:""}
+ <h2>Recommended actions</h2><ul>${r.recommendations.map(a=>`<li>&#9654; ${esc(a)}</li>`).join("")}</ul>
+ <small style="color:var(--mut)">Scores are a decision aid, not proof. Thresholds are project assumptions and a human should make the final call.</small>`}
+$("#go").onclick=async()=>{try{render(await api("/api/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sender:$("#sender").value,display_name:$("#dn").value,subject:$("#subject").value,body:$("#body").value,attachment:$("#att").value})}));refresh()}catch(e){$("#res").innerHTML=`<h2>Could not analyze</h2><p>${esc(e.message)}</p>`}};
+const charts={};function mk(id,cfg){charts[id]?.destroy();cfg.options={...(cfg.options||{}),responsive:true,maintainAspectRatio:false};charts[id]=new Chart($("#"+id),cfg)}
+async function refresh(){const [s,ix]=await Promise.all([api("/api/dashboard/stats"),api("/api/dashboard/indicators")]);
+ const K=[["Emails analyzed",s.total,"#1B3555","all time"],["Likely phishing",s.high,COL["HIGH RISK"],Math.round(s.high/Math.max(s.total,1)*100)+"% of total"],["Suspicious",s.suspicious,COL["SUSPICIOUS"],"needs analyst review"],["Low risk",s.low+s.safe,COL["LOW RISK"],s.safe+" fully clear"],["Average risk",s.avg,"#6B5BD2","out of 100"]];
+ $("#kpis").innerHTML=K.map(k=>`<div class="card kpi" style="--c:${k[2]}"><small>${k[0]}</small><b>${k[1]}</b><small>${k[3]}</small></div>`).join("");
+ const order=["HIGH RISK","SUSPICIOUS","LOW RISK","SAFE"];
+ mk("c1",{type:"doughnut",data:{labels:order,datasets:[{data:order.map(k=>s.distribution[k]||0),backgroundColor:order.map(k=>COL[k])}]},options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}}}});
+ mk("c2",{type:"pie",data:{labels:["Flagged","Clear"],datasets:[{data:[s.flagged,s.clear],backgroundColor:["#D6344A","#2E9E78"]}]},options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}}}});
+ mk("c3",{type:"bar",data:{labels:ix.top.map(x=>x.t),datasets:[{data:ix.top.map(x=>x.n),backgroundColor:"#1B3555"}]},options:{indexAxis:"y",plugins:{legend:{display:false}}}});
+ mk("c4",{type:"bar",data:{labels:s.histogram.map((_,i)=>i*10+"-"+(i*10+9)),datasets:[{data:s.histogram,backgroundColor:s.histogram.map((_,i)=>i<1?COL.SAFE:i<3?COL["LOW RISK"]:i<6?COL.SUSPICIOUS:COL["HIGH RISK"])}]},options:{plugins:{legend:{display:false}}}});
+ mk("c5",{type:"line",data:{labels:s.trend.map(t=>t.date),datasets:[{label:"High risk",data:s.trend.map(t=>t.high),borderColor:COL["HIGH RISK"],tension:.3},{label:"Suspicious",data:s.trend.map(t=>t.suspicious),borderColor:COL.SUSPICIOUS,tension:.3}]},options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}}}});
+ mk("c6",{type:"bar",data:{labels:ix.keywords.map(x=>x.t),datasets:[{data:ix.keywords.map(x=>x.n),backgroundColor:"#6B5BD2"}]},options:{indexAxis:"y",plugins:{legend:{display:false}}}});
+ loadHist();loadLatest()}
+async function loadHist(){const p=new URLSearchParams({cls:$("#fc").value,q:$("#q").value,sort:$("#so").value,limit:100});const rows=await api("/api/analyses?"+p);
+ $("#hist").innerHTML=rows.map(r=>`<tr class="r" data-id="${r.analysis_id}" tabindex="0"><td><span class="dot" style="--c:${COL[r.classification]}"></span>${esc(r.classification)}</td><td>${r.risk_score}</td><td>${esc(r.subject)}</td><td>${esc(r.sender_domain)}</td><td>${esc(r.created_at.slice(5,16))}</td></tr>`).join("")||"<tr><td colspan=5>No analyses match these filters.</td></tr>"}
+["q","fc","so"].forEach(i=>$("#"+i).addEventListener("input",loadHist));
+let cur=0;async function open(id){const a=await api("/api/analyses/"+id);cur=id;
+ $("#dbody").innerHTML=`<h2>${esc(a.subject)||"(no subject)"}</h2><span class="badge" style="--c:${COL[a.classification]}">${esc(a.classification)} ${a.risk_score}/100</span><p><small>${esc(a.sender_domain)} &middot; ${esc(a.created_at)}</small></p><ul>${a.indicators.map(i=>`<li><b>${esc(i.indicator_type)}</b><br><small>${esc(i.description)}</small></li>`).join("")||"<li>No indicators.</li>"}</ul>${a.urls.map(u=>`<p><code>${esc(u.url_safe_representation)}</code> ${u.risk_score}/100</p>`).join("")}`;$("#dlg").showModal()}
+$("#hist").onclick=e=>{const t=e.target.closest("tr[data-id]");if(t)open(t.dataset.id)};
+$("#hist").onkeydown=e=>{if(e.key==="Enter"){const t=e.target.closest("tr[data-id]");if(t)open(t.dataset.id)}};
+$("#cl").onclick=()=>$("#dlg").close();$("#del").onclick=async()=>{await api("/api/analyses/"+cur,{method:"DELETE"});$("#dlg").close();refresh()};
+const QZ=[["From: it-help@mail-portal.invalid.test\nSubject: Mailbox full\nDear user, confirm your login now: http://203.0.113.9/mailbox",1,"Generic greeting, urgency, IP-address link and a credential request."],["From: library@example.org\nSubject: Book ready\nHello Meera, your reserved book is ready for pickup until Monday.",0,"Personal greeting, no links, no pressure, no sensitive request."],["From: accounts@exampl3.invalid.test\nSubject: Invoice overdue\nPay immediately or legal action follows. See statement.pdf.exe",1,"Lookalike domain, financial pressure, threat and a double-extension file."],["From: hr@example.com\nSubject: Leave policy 2026\nHi team, the updated leave policy is on the HR wiki.",0,"Expected internal topic, no links or requests. Still verify if unsure."],["From: rewards@prize-draw.invalid.test\nSubject: You have won!!!\nClaim your gift card: http://bit.ly/claimit",1,"Reward bait, shortened link and aggressive punctuation."]];
+let qi=0,qsc=0;function quiz(){const q=QZ[qi];if(!q){$("#qb").innerHTML=`<p><b>Score: ${qsc}/${QZ.length}</b></p><button id="qr">Play again</button>`;$("#qr").onclick=()=>{qi=0;qsc=0;quiz()};$("#qs").textContent="";return}
+ $("#qs").textContent=`(${qi+1}/${QZ.length})`;$("#qb").innerHTML=`<pre style="white-space:pre-wrap;background:#F5F7FB;padding:10px;border-radius:8px;margin:0 0 8px;font:inherit">${esc(q[0])}</pre><div class="btns"><button data-a="1">Phishing</button><button class="alt" data-a="0">Legitimate</button></div><p id="qf" aria-live="polite"></p>`;
+ $("#qb").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===q[1];if(ok)qsc++;$("#qf").innerHTML=`<b>${ok?"Correct.":"Not quite."}</b> ${esc(q[2])} <button class="alt" id="qn">Next</button>`;$("#qb").querySelectorAll("[data-a]").forEach(x=>x.disabled=true);$("#qn").onclick=()=>{qi++;quiz()}})}
+quiz();
+load(SAMPLES.p);
+const rowH=r=>`<tr class="r" data-id="${r.analysis_id}" tabindex="0"><td><span class="dot" style="--c:${COL[r.classification]}"></span>${esc(r.classification)}</td><td>${r.risk_score}</td><td>${esc(r.subject)}</td><td>${esc(r.sender_domain)}</td><td>${esc(r.created_at.slice(5,16))}</td></tr>`;
+async function loadLatest(){const rows=await api("/api/analyses?limit=8");$("#latest").innerHTML=rows.map(rowH).join("")}
+$("#latest").onclick=e=>{const t=e.target.closest("tr[data-id]");if(t)open(t.dataset.id)};
+$("#latest").onkeydown=e=>{if(e.key==="Enter"){const t=e.target.closest("tr[data-id]");if(t)open(t.dataset.id)}};
+$("#res").innerHTML=`<h2>Result</h2><p>Paste an email on the left, or load a sample, then click <b>Analyze email</b>.</p><ul><li>You get a 0-100 risk score and a class.</li><li>Every indicator is listed with its points, so you can see why.</li><li>Links are checked as text only and never opened.</li><li>Each analysis is saved to History and updates the Dashboard.</li></ul>`;
+function show(t){document.querySelectorAll(".tab").forEach(x=>x.hidden=x.id!=="t-"+t);document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.go===t));history.replaceState(null,"","#"+t);if(t==="dash")Object.values(charts).forEach(c=>c.resize())}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)show(b.dataset.go)});
+show(["dash","an","hist","aw"].includes(location.hash.slice(1))?location.hash.slice(1):"dash");
+refresh();
+</script></body></html>

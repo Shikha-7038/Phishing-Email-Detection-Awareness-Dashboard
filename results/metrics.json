@@ -1,0 +1,69 @@
+{
+  "Logistic Regression": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "unseen_accuracy": 1.0
+  },
+  "Naive Bayes": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "unseen_accuracy": 0.9167
+  },
+  "Random Forest (TF-IDF + indicators)": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "unseen_accuracy": 1.0
+  },
+  "_top_phishing_terms": [
+    "http",
+    "dear",
+    "verify",
+    "details",
+    "payment",
+    "invoice",
+    "login",
+    "verify your",
+    "password expires",
+    "expires"
+  ],
+  "_test_size": 298,
+  "_train_size": 891,
+  "_confusion": {
+    "Logistic Regression": [
+      [
+        150,
+        0
+      ],
+      [
+        0,
+        148
+      ]
+    ],
+    "Naive Bayes": [
+      [
+        150,
+        0
+      ],
+      [
+        0,
+        148
+      ]
+    ],
+    "Random Forest (TF-IDF + indicators)": [
+      [
+        150,
+        0
+      ],
+      [
+        0,
+        148
+      ]
+    ]
+  }
+}
